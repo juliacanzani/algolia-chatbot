@@ -209,3 +209,41 @@ body > main {
   margin-right: 0.5em;
   text-align: right;
 }
+
+.display-options {
+  display: flex;
+  justify-content: space-around;
+  align-items: stretch;
+  margin: 1em 0;
+  animation: fadein 0.6s;
+}
+
+.display-option {
+  text-decoration: none;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin: 0.5em;
+  color: inherit;
+  padding: 0.5em;
+}
+
+.display-option-name {
+  display: block;
+  width: 100%;
+  text-align: center;
+  font-size: 1.2em;
+  margin-bottom: 0.5em;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3; /* number of lines to show */
+          line-clamp: 3; 
+  -webkit-box-orient: vertical;
+}
+
+.display-option-price {
+  float: left;
+}
+
+.display-option-rating {
+  float: right;
+}

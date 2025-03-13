@@ -7,8 +7,8 @@
 
   <body>
     <main>
-      <h1>Welcome to AllTheThings!</h1>
-      <p>This is an ecommerce site with a huge product inventory and infrastructure, similar to Amazon. See how the AI Support Agent can help you with your order in the chat window!</p>
+      <h1>Welcome to AllTheGroceries!</h1>
+      <p>This is an ecommerce grocery site with a huge product inventory and infrastructure, similar to Whole Foods. See how the AI Support Agent can help you find things in the chat window!</p>
       <span>Design inspired by <a href="https://codepen.io/shivapandey/pen/dWdRYM">this CodePen</a></span>
     </main>
 
@@ -68,7 +68,7 @@
         ).imageURL;
       }
 
-      const displayMessage = async (source, content) => {
+      const displayMessage = async (source, content, displayOptions = []) => {
         conversationWindow.innerHTML += `
           <div class="message" data-source="${ source }">
             <img src="${ source == "operator" ? "/operator.webp" : (await getUserImage()) }">
@@ -78,6 +78,21 @@
           </div>
         `;
 
+        if (displayOptions.length) {
+          console.log(displayOptions)
+          conversationWindow.innerHTML += `
+            <div class="display-options" data-source="${ source }">
+              ${displayOptions.map(option => `
+                <a class="display-option" href="/product/${option.objectID}">
+                  <span class="display-option-name">${option.name}</span>
+                  <span class="display-option-price">$${option.price}</span>
+                  <span class="display-option-rating">${option.rating} stars</span>
+                </a>
+              `).join("")}
+            </div>
+          `;
+        }
+
         conversationWindow.scrollTo(0, conversationWindow.scrollHeight);
       }
 
@@ -86,7 +101,7 @@
         messageInput.value = "";
         await displayMessage("user", message);
 
-        const response = (
+        const {response, displayOptions} = (
           await (
             await fetch(
               "/send-chat-message", 
@@ -99,8 +114,11 @@
               }
             )
           ).json()
-        ).response;
-        if (!!response) await displayMessage("operator", response);
+        );
+
+        if (!!response) {
+          await displayMessage("operator", response, displayOptions);
+        }
       };
 
       chatSubmit.addEventListener("click", sendUserMessage);
