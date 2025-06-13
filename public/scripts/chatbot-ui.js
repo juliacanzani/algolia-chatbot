@@ -1,5 +1,3 @@
-// /scripts/chatbot-ui.js
-
 class ChatBot extends HTMLElement {
   static defaultStrings = {
     chatLabel: "AI Support Chat",
@@ -40,7 +38,7 @@ class ChatBot extends HTMLElement {
       <style>
         @import url('/styles/chatbot.css');
       </style>
-      <div id="chat" role="complementary" aria-label="${s.chatLabel}">
+      <div id="chat" role="complementary" aria-label="${s.chatLabel}" class="no-animation">
         <button id="chat-circle" aria-expanded="false">
             <span class="visually-hidden">${s.chatOpenLabel}</span>
             <svg viewBox="0 0 512 512">
@@ -134,8 +132,6 @@ class ChatBot extends HTMLElement {
 
           const dl = document.createElement("dl");
 
-console.log("🔍 Option:", option);
-console.log("📦 Schema:", optionSchema);
 
           for (const [key, val] of Object.entries(option)) {
             const schema = optionSchema?.[key] ?? { type: "text", label: key };
@@ -208,7 +204,7 @@ console.log("📦 Schema:", optionSchema);
       }
     });
 
-
+    this.shadowRoot.getElementById("chat").classList.remove("no-animation");
   }
 
   open() {

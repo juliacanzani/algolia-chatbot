@@ -1,4 +1,4 @@
-import { queryAlgolia } from "../utils/queryAlgolia.js";
+import { executeAlgoliaSearch } from "../utils/executeAlgoliaSearch.js";
 import { formatToolResponse } from "../utils/formatToolResponse.js";
 
 export const toolFunctions = {
@@ -22,9 +22,11 @@ export const toolFunctions = {
       }
     },
     func: async ({ query }) => {
-      const { hits, error } = await queryAlgolia({
+      const { hits, error } = await executeAlgoliaSearch({
         indexName: process.env.ALGOLIA_PRODUCTS_INDEX_NAME,
-        query
+        query,
+        maxHits: 5,
+        debug: process.env.DEBUG_ALGOLIA === "true"
       });
 
       if (error || hits.length === 0) {

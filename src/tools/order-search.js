@@ -1,6 +1,6 @@
-// /src/tools/order-search.js
-import { queryAlgolia } from "../utils/queryAlgolia.js";
+import { executeAlgoliaSearch } from "../utils/executeAlgoliaSearch.js";
 import { formatToolResponse } from "../utils/formatToolResponse.js";
+import { authenticateUser } from "../auth.js";
 
 export const toolFunctions = {
   searchOrders: {
@@ -8,13 +8,13 @@ export const toolFunctions = {
       type: "function",
       function: {
         name: "searchOrders",
-        description: "Search the user's past orders using a keyword.",
+        description: "Find past orders for the logged-in user by ID, date, or status.",
         parameters: {
           type: "object",
           properties: {
             query: {
               type: "string",
-              description: "A search term related to an order (e.g., item name, order ID, or date)"
+              description: "Search term for the order (e.g., status, order ID, or date)"
             }
           },
           required: ["query"]
@@ -22,24 +22,28 @@ export const toolFunctions = {
       }
     },
     func: async ({ query }) => {
-      const { hits, error } = await queryAlgolia({
+      const user = await authenticateUser();
+
+      const { hits, error } = await executeAlgoliaSearch({
         indexName: process.env.ALGOLIA_ORDERS_INDEX_NAME,
-        query
+        query,
+        facetFilters: [`customerId:${user.customerID}`],
+        maxHits: 5,
+        debug: process.env.DEBUG_ALGOLIA === "true"
       });
 
       if (error || hits.length === 0) {
-        return "No matching orders found.";
+        return "We couldn’t find any orders matching that search.";
       }
 
       return formatToolResponse({
         hits,
-        intro: "Here are a few orders that may match what you're looking for. Only offer the user orders if they can identify them by ID/order number. Just mention one if it seems relevant.",
-        fieldsForMessage: ["id", "item", "date", "total"],
+        intro: `Here are some of your recent orders that matched your search.`,
+        fieldsForMessage: ["orderNumber", "date", "total"],
         fieldsForOptions: {
-          item: { label: "Name", type: "title" },
-          total: { label: "Total", type: "currency" },
-          date: { label: "Purchase Date", type: "date" },
-          id: { label: "Order Number", type: "id" }
+          orderNumber: { label: "Order ID", type: "id" },
+          date: { label: "Order Date", type: "date" },
+          total: { label: "Total", type: "currency" }
         }
       });
     }
