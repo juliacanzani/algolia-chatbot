@@ -7,7 +7,8 @@ class ChatBot extends HTMLElement {
     chatBoxLabel: "Ask Penny",
     yourMessageLabel: "Your message",
     agentMessageLabel: "Message from Penny",
-    messagePlaceholder: "Send a message..."
+    messagePlaceholder: "Send a message...",
+    initialAgentMessage: "Hi! I can help you find products, check your past orders, or see recent announcements. What would you like to do?"
   };
 
   static strings = { ...ChatBot.defaultStrings };
@@ -205,6 +206,9 @@ class ChatBot extends HTMLElement {
     });
 
     this.shadowRoot.getElementById("chat").classList.remove("no-animation");
+
+    // Show initial assistant message
+    displayMessage("operator", s.initialAgentMessage);
   }
 
   open() {
@@ -213,12 +217,19 @@ class ChatBot extends HTMLElement {
     const input = this.shadowRoot.querySelector("#chat-input textarea");
     const chatCircle = this.shadowRoot.getElementById("chat-circle");
 
+    const alreadyOpened = chat.dataset.hasOpened === "true";
+
     chat.classList.add("open");
     chatBox.removeAttribute("inert");
     chatBox.removeAttribute("aria-hidden");
     chatCircle.setAttribute("aria-expanded", "true");
 
     setTimeout(() => input.focus(), 150);
+
+    if (!alreadyOpened) {
+      displayMessage("operator", "Hi! I can help you find products, check your past orders, or see recent announcements. What would you like to do?");
+      chat.dataset.hasOpened = "true";
+    }
 
     this.dispatchEvent(new Event("chat-opened"));
   }
