@@ -1,11 +1,32 @@
 [
   {
-    "message": "Shipping delays in Malaysia because of regional instability"
-  }, 
+    "objectID": "announce-001",
+    "title": "Shipping Delay in Toronto Region",
+    "summary": "Due to recent storms, deliveries in the Toronto area may be delayed by 1–2 days.",
+    "date": "2025-06-10"
+  },
   {
-    "message": "Supply shortage of microcontrollers is causing shipping delays all over the world"
-  }, 
+    "objectID": "announce-002",
+    "title": "New Loyalty Program Launch",
+    "summary": "We're rolling out a new points-based loyalty system starting next week.",
+    "date": "2025-06-07"
+  },
   {
-    "message": "Tropical Storm Debby is causing shipping delays on the east coast of the US"
+    "objectID": "announce-003",
+    "title": "Weekend Delivery Update",
+    "summary": "Weekend delivery windows are expanding to include early morning slots.",
+    "date": "2025-06-04"
+  },
+  {
+    "objectID": "announce-004",
+    "title": "Temporary Closure: Montreal Warehouse",
+    "summary": "Our Montreal warehouse will be closed for maintenance from June 14–16.",
+    "date": "2025-06-01"
+  },
+  {
+    "objectID": "announce-005",
+    "title": "Plastic-Free Packaging Trial",
+    "summary": "Select orders will now be shipped in fully compostable packaging as part of a new pilot program.",
+    "date": "2025-05-29"
   }
 ]

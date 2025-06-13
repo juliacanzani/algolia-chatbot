@@ -1,0 +1,42 @@
+[
+  {
+    "objectID": "groceries-001",
+    "name": "Organic Fuji Apples",
+    "description": "Crisp, sweet organic apples perfect for snacking or baking.",
+    "bullets": ["Organic", "Non-GMO", "Product of Canada"],
+    "price": 5.99,
+    "rating": 4.8
+  },
+  {
+    "objectID": "groceries-002",
+    "name": "Almond Milk - Unsweetened",
+    "description": "Creamy non-dairy milk made from California almonds.",
+    "bullets": ["Unsweetened", "Dairy-Free", "Gluten-Free"],
+    "price": 3.49,
+    "rating": 4.5
+  },
+  {
+    "objectID": "groceries-003",
+    "name": "Whole Wheat Bread",
+    "description": "Hearty whole grain bread baked fresh daily.",
+    "bullets": ["High in fiber", "No preservatives", "Fresh baked"],
+    "price": 4.25,
+    "rating": 4.2
+  },
+  {
+    "objectID": "groceries-004",
+    "name": "Free-Range Chicken Breast",
+    "description": "Lean, hormone-free chicken breast from local farms.",
+    "bullets": ["Antibiotic-free", "Ethically raised", "Individually vacuum sealed"],
+    "price": 9.75,
+    "rating": 4.7
+  },
+  {
+    "objectID": "groceries-005",
+    "name": "Roasted Almonds - Sea Salt",
+    "description": "Crunchy roasted almonds with a touch of sea salt.",
+    "bullets": ["Rich in protein", "Great for snacking", "Lightly salted"],
+    "price": 6.50,
+    "rating": 4.6
+  }
+]
