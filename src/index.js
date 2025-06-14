@@ -1,18 +1,16 @@
 import 'dotenv/config';
-import { algoliasearch } from "algoliasearch";
-import OpenAI from "openai";
 import express from "express";
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import { authenticateUser } from './auth.js';
 import { toolFunctions } from './tools/index.js';
+import OpenAI from "openai";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const algoliaClient = algoliasearch(process.env.ALGOLIA_APPLICATION_ID, process.env.ALGOLIA_API_KEY);
-const openai = new OpenAI(); // uses process.env.OPENAI_API_KEY automatically
 const app = express(); // starts our server
 app.use(express.json()); 
 
+const openai = new OpenAI(); // uses process.env.OPENAI_API_KEY automatically
 let messages = [
   {
     role: "system",
