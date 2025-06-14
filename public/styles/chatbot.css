@@ -28,6 +28,7 @@
   padding: 0 !important;
   width: 1px !important;
   white-space: nowrap !important;
+  position: absolute !important;
 }
 .no-animation *,
 .no-animation {
@@ -365,12 +366,16 @@
 }
 
 .display-option__item--is-type-title {
-  display: block;
-  width: 100%;
   text-align: center;
   font-size: 1.2em;
   font-weight: bold;
   margin-bottom: 0.5em;
+}
+
+.display-option__item--is-type-title,
+.display-option__item--is-type-longtext {
+  display: block;
+  width: 100%;
 
   & dt {
     display: block;
