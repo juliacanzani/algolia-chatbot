@@ -89,7 +89,6 @@ class ChatBot extends HTMLElement {
           </header>
           <div class="panel__body">
             <main id="chat-messages"></main>
-            <div id="chat-typing-indicator" class="hidden">${s.agentName} is typing...</div>
           </div>
           <div class="panel__foot" id="chat-controls">
             <label for="chat-controls-input" class="visually-hidden">${s.chatInputLabel}</label>
@@ -146,7 +145,10 @@ class ChatBot extends HTMLElement {
     this.refs.input.value = "";
     await this.appendMessage("user", message);
 
-    this.refs.typing.classList.remove("hidden");
+    this.refs.messages.querySelectorAll('[data-typing]').forEach(el => el.remove());
+    const typingEl = this.renderTypingIndicator();
+    this.refs.messages.appendChild(typingEl);
+    typingEl.scrollIntoView({ behavior: "instant", block: "end" });
 
     const res = await fetch(`/send-chat-message?user=${this.getCurrentUserKey()}`, {
       method: "POST",
@@ -155,27 +157,33 @@ class ChatBot extends HTMLElement {
     });
     const { response, displayOptions, optionSchema, timestamp } = await res.json();
 
-    this.refs.typing.classList.add("hidden");
-
     if (response) {
       await this.appendMessage("agent", response, displayOptions, optionSchema, timestamp);
     }
   }
 
   async appendMessage(source, content, displayOptions = [], optionSchema = {}, timestamp = null) {
+    this.refs.messages.querySelectorAll('[data-typing]').forEach(el => el.remove());
+
+    const entry = document.createElement("div");
+    entry.className = `chat-entry message--is-source-${source}`;
+
     const msgEl = await this.renderMessage({ source, content, timestamp });
-    this.refs.messages.appendChild(msgEl);
+    entry.appendChild(msgEl);
+
+    if (displayOptions.length) {
+      const suggestions = this.renderDisplayOptions(displayOptions, optionSchema);
+      entry.appendChild(suggestions);
+    }
+
+    this.refs.messages.appendChild(entry);
 
     if (this.isAgent(source)) {
       this.refs.liveRegion.textContent = content;
     }
+    
+    msgEl.scrollIntoView({ behavior: "instant", block: "end" });
 
-    if (displayOptions.length) {
-      const displayBlock = this.renderDisplayOptions(displayOptions, optionSchema);
-      this.refs.messages.appendChild(displayBlock);
-    }
-
-    this.refs.messages.scrollTo(0, this.refs.messages.scrollHeight);
   }
 
   // Visibility Controls
@@ -288,6 +296,18 @@ class ChatBot extends HTMLElement {
     }
 
     return container;
+  }
+  renderTypingIndicator() {
+    const typingEl = document.createElement("article");
+    typingEl.className = "message message--is-source-agent message--is-indicator";
+    typingEl.dataset.typing = "true";
+    typingEl.innerHTML = `
+      <img class="message__avatar" src="/agent.webp" alt="${ChatBot.strings.agentName}">
+      <div class="message__content">
+        ${ChatBot.strings.agentName} is typing...
+      </div>
+    `;
+    return typingEl;
   }
 
   formatValue(type, val) {
