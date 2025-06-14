@@ -148,7 +148,7 @@ class ChatBot extends HTMLElement {
 
     this.refs.typing.classList.remove("hidden");
 
-    const res = await fetch("/send-chat-message", {
+    const res = await fetch(`/send-chat-message?user=${this.getCurrentUserKey()}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ content: message })
@@ -304,10 +304,15 @@ class ChatBot extends HTMLElement {
     return source === "agent";
   }
 
+  getCurrentUserKey() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get("user") || "jaden";
+  }
+
   async getUserImage() {
     if (this._userImage) return this._userImage;
     try {
-      const res = await fetch("/get-user-image", { method: "POST" });
+      const res = await fetch(`/get-user-image?user=${this.getCurrentUserKey()}`, { method: "POST" });
       const { imageURL } = await res.json();
       this._userImage = imageURL || "/user.webp";
       return this._userImage;

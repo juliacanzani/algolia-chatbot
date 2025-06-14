@@ -280,6 +280,7 @@
 
 .message__avatar {
   border-radius: 50%;
+  aspect-ratio: 1 / 1;
   height: 3em;
   border: 2px solid var(--theme-primary-light);
 }
