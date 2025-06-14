@@ -41,7 +41,7 @@ export const toolFunctions = {
           name: { label: "Name", type: "title" },
           price: { label: "Price", type: "currency" },
           rating: { label: "Rating", type: "rating" },
-          objectID: { label: "Link", type: "id" }
+          objectID: { label: "SKU", type: "id" }
         }
       });
     }

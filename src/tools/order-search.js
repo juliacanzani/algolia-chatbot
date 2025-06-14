@@ -38,10 +38,10 @@ export const toolFunctions = {
 
       return formatToolResponse({
         hits,
-        intro: `Here are some of your recent orders that matched your search.`,
+        intro: `Below this message, the user will see each order's number, total price, and date. Don't repeat the list — just highlight a relevant item or two in plain language.`,
         fieldsForMessage: ["orderNumber", "date", "total"],
         fieldsForOptions: {
-          orderNumber: { label: "Order ID", type: "id" },
+          orderNumber: { label: "Order #", type: "id" },
           date: { label: "Order Date", type: "date" },
           total: { label: "Total", type: "currency" }
         }
