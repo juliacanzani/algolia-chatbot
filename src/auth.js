@@ -6,12 +6,12 @@ export const authenticateUser = async (req) => {
       image: "https://placehold.co/256x256?text=J"
     },
     alex: {
-      customerID: "a1b2c3d4-e5f6-7890-abcd-ef0123456789",
+      customerID: "a2v3w4x5-6z7a-8b9c-d0e1-f2g3h4i5j6k7",
       name: "Alex",
       image: "https://placehold.co/256x256?text=A"
     },
     riley: {
-      customerID: "9876abcd-4321-efgh-ijkl-1234567890ab",
+      customerID: "a3f2b8c9-55c0-4d7d-9874-4b8f8c9d1a2b",
       name: "Riley",
       image: "https://placehold.co/256x256?text=R"
     }
