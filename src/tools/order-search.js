@@ -8,13 +8,13 @@ export const toolFunctions = {
       type: "function",
       function: {
         name: "searchOrders",
-        description: "Find past orders for the logged-in user by ID, date, or status.",
+        description: "Find past orders by ID, date, or status. Results of queries are automatically filtered by the current user's ID, so any results recieved from queries are safe to share. If the user asks generally for orders, the tool can return up to five results with an empty query.",
         parameters: {
           type: "object",
           properties: {
             query: {
               type: "string",
-              description: "Search term for the order (e.g., status, order ID, or date)"
+              description: "Search term for the order (e.g., purchase date, delivery date, order number, order total)"
             }
           },
           required: ["query"]
