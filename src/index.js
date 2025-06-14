@@ -11,10 +11,10 @@ const app = express(); // starts our server
 app.use(express.json()); 
 
 const openai = new OpenAI(); // uses process.env.OPENAI_API_KEY automatically
-const userContexts = new Map()
+const userContexts = new Map();
 
 const getAIResponse = async (messages, displayOptions = []) => {
- const trimmedMessages = trimMessageHistory(messages, 30);
+  const trimmedMessages = trimMessageHistory(messages, 30);
 
   const response = await openai.chat.completions.create({
     model: "gpt-4o-mini",
@@ -22,7 +22,7 @@ const getAIResponse = async (messages, displayOptions = []) => {
     tools: Object.values(toolFunctions).map(x => x.definition)
   });
 
-  messages.push(response.choices[0].message);
+  const assistantMessage = response.choices[0].message;
 
   switch (response.choices[0].finish_reason ?? "stop") {
     case "length":
@@ -34,8 +34,9 @@ const getAIResponse = async (messages, displayOptions = []) => {
       return { error: "The AI's response violated their content policy." };
 
     case "tool_calls": {
-      const toolCalls = response.choices[0].message.tool_calls;
+      messages.push(assistantMessage);
 
+      const toolCalls = assistantMessage.tool_calls;
       let mergedDisplayOptions = [];
       let mergedOptionSchema = {};
 
@@ -68,12 +69,14 @@ const getAIResponse = async (messages, displayOptions = []) => {
     }
 
     case "stop":
+      messages.push(assistantMessage);
       return {
-        response: response.choices[0].message.content,
+        response: assistantMessage.content,
         displayOptions
       };
   }
 };
+
 
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/pages/index.html');
@@ -99,7 +102,9 @@ app.post("/send-chat-message", async (req, res) => {
     messages = [
       {
         role: "system",
-        content: `You're a helpful customer service agent named Penny. You're now chatting with ${user.name} (please greet the user by this name, when it's available) on the website of AllTheThings, an ecommerce grocery site with a huge product inventory and infrastructure, similar to Whole Foods. The AllTheThings chat client does not render markdown, so you should avoid returning it.`
+        content: `You're a helpful customer service agent named Penny. 
+                  You're now chatting with ${user.name} (please greet the user by this name, when it's available) on the website of AllTheThings, an ecommerce grocery site with a huge product inventory and infrastructure, similar to Whole Foods.
+                  The AllTheThings chat client does not support Markdown, HTML, or any other formatting. Respond using plain text only. Do not include asterisks, underscores, bullet points, code blocks, tables, or links — even if the user asks for them. Just write clearly in natural language.`
       }
     ];
     userContexts.set(userId, messages);
