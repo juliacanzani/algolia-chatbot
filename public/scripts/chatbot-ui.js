@@ -3,15 +3,15 @@ class ChatBot extends HTMLElement {
   // Static Config
   static defaultStrings = {
     chatLabel: "AI Support Chat",
-    agentName: "Penny",
-    chatOpenLabel: "Open chat",
+    chatTriggerLabel: "Open chat",
     chatCloseLabel: "Close chat",
-    chatBoxLabel: "Ask Penny",
+    chatPanelLabel: "Ask Penny",
+    chatInputLabel: "Your message",
+    chatInputPlaceholder: "Send a message...",
+    chatSendLabel: "Send your message",
+    agentName: "Penny",
     yourMessageLabel: "Your message",
     agentMessageLabel: "Message from Penny",
-    messageInputLabel: "Your message",
-    messagePlaceholder: "Send a message...",
-    messageSendLabel: "Send your message",
     initialAgentMessage: "Hi! I can help you find products, check your past orders, or see recent announcements. What would you like to do?"
   };
 
@@ -36,8 +36,8 @@ class ChatBot extends HTMLElement {
 
     requestAnimationFrame(() => {
       setTimeout(() => {
-        this.refs.chatBox.classList.remove("no-animation");
-        this.refs.overlay.classList.remove("no-animation");
+        this.refs.chatPanel.classList.remove("no-animation");
+        this.refs.chatOverlay.classList.remove("no-animation");
       }, 50);
     });
   }
@@ -75,27 +75,27 @@ class ChatBot extends HTMLElement {
         </symbol>
       </svg>
       <div id="chat" role="complementary" aria-label="${s.chatLabel}">
-        <button id="chat-circle" aria-expanded="false">
-          <span class="visually-hidden">${s.chatOpenLabel}</span>
+        <button class="button button--is-layout-icon" id="chat-trigger" aria-expanded="false">
+          <span class="visually-hidden">${s.chatTriggerLabel}</span>
           <svg class="icon" viewBox="0 0 512 512" aria-hidden="true">
             <use href="#icon-chat"></use>
           </svg>
         </button>
         <div id="chat-background-overlay" class="no-animation"></div>
-        <div id="chat-box" class="card no-animation" role="region" aria-labelledby="chat-box-label" inert aria-hidden="true">
-          <header class="card__head">
-            <span id="chat-box-label">${s.chatBoxLabel}</span>
-            <button id="chat-box-close" aria-label="${s.chatCloseLabel}">&times;</button>
+        <div id="chat-panel" class="panel no-animation" role="region" aria-labelledby="chat-panel-label" inert aria-hidden="true">
+          <header class="panel__head">
+            <span id="chat-panel-label">${s.chatPanelLabel}</span>
+            <button class="button button--is-layout-icon" id="chat-panel-close" aria-label="${s.chatCloseLabel}">&times;</button>
           </header>
-          <div class="card__body">
+          <div class="panel__body">
             <main id="chat-messages"></main>
-            <div id="typing-indicator" class="hidden">${s.agentName} is typing...</div>
+            <div id="chat-typing-indicator" class="hidden">${s.agentName} is typing...</div>
           </div>
-          <div class="card__foot" id="chat-input">
-            <label for="chat-input-control" class="visually-hidden">${s.messageInputLabel}</label>
-            <textarea id="chat-input-control" placeholder="${s.messagePlaceholder}"></textarea>
-            <button id="chat-submit">
-              <span class="visually-hidden">${s.messageSendLabel}</span>
+          <div class="panel__foot" id="chat-controls">
+            <label for="chat-controls-input" class="visually-hidden">${s.chatInputLabel}</label>
+            <textarea id="chat-controls-input" placeholder="${s.chatInputPlaceholder}"></textarea>
+            <button class="button button--is-layout-icon" id="chat-controls-submit">
+              <span class="visually-hidden">${s.chatSendLabel}</span>
               <svg class="icon" viewBox="0 0 512 512" aria-hidden="true">
                 <use href="#icon-send"></use>
               </svg>
@@ -110,26 +110,26 @@ class ChatBot extends HTMLElement {
   cacheRefs() {
     const $ = (id) => this.shadowRoot.getElementById(id);
     this.refs = {
-      chat: $("chat"),
-      chatCircle: $("chat-circle"),
-      chatBox: $("chat-box"),
-      chatClose: $("chat-box-close"),
-      overlay: $("chat-background-overlay"),
+      chatWrapper: $("chat"),
+      chatTrigger: $("chat-trigger"),
+      chatPanel: $("chat-panel"),
+      chatClose: $("chat-panel-close"),
+      chatOverlay: $("chat-background-overlay"),
       messages: $("chat-messages"),
-      submit: $("chat-submit"),
-      textarea: this.shadowRoot.querySelector("#chat-input textarea"),
-      typing: $("typing-indicator"),
+      submit: $("chat-controls-submit"),
+      input: $("chat-controls-input"),
+      typing: $("chat-typing-indicator"),
       liveRegion: $("chat-live-region")
     };
   }
 
   addEventListeners() {
     const toggle = () => this.toggle();
-    [this.refs.chatCircle, this.refs.chatClose, this.refs.overlay].forEach(el => {
+    [this.refs.chatTrigger, this.refs.chatClose, this.refs.chatOverlay].forEach(el => {
       el.addEventListener("click", toggle);
     });
 
-    this.refs.textarea.addEventListener("keydown", (e) => {
+    this.refs.input.addEventListener("keydown", (e) => {
       if (e.key === "Enter") {
         e.preventDefault();
         clearTimeout(this._debounceTimeout);
@@ -140,10 +140,10 @@ class ChatBot extends HTMLElement {
 
   // Messaging Logic
   async sendUserMessage() {
-    const message = this.refs.textarea.value.trim();
+    const message = this.refs.input.value.trim();
     if (!message) return;
 
-    this.refs.textarea.value = "";
+    this.refs.input.value = "";
     await this.appendMessage("user", message);
 
     this.refs.typing.classList.remove("hidden");
@@ -180,34 +180,34 @@ class ChatBot extends HTMLElement {
 
   // Visibility Controls
   open() {
-    const { chat, chatBox, textarea, chatCircle } = this.refs;
-    const alreadyOpened = chat.dataset.hasOpened === "true";
+    const { chatWrapper, chatPanel, input, chatTrigger } = this.refs;
+    const alreadyOpened = chatWrapper.dataset.hasOpened === "true";
 
-    chat.classList.add("open");
-    chatBox.removeAttribute("inert");
-    chatBox.removeAttribute("aria-hidden");
-    chatCircle.setAttribute("aria-expanded", "true");
+    chatWrapper.classList.add("open");
+    chatPanel.removeAttribute("inert");
+    chatPanel.removeAttribute("aria-hidden");
+    chatTrigger.setAttribute("aria-expanded", "true");
 
-    setTimeout(() => textarea.focus(), 150);
+    setTimeout(() => input.focus(), 150);
 
     if (!alreadyOpened) {
       setTimeout(async () => {
         await this.appendMessage("agent", ChatBot.strings.initialAgentMessage);
       }, 500);
-      chat.dataset.hasOpened = "true";
+      chatWrapper.dataset.hasOpened = "true";
     }
 
     this.dispatchEvent(new Event("chat-opened"));
   }
 
   close() {
-    const { chat, chatBox, chatCircle } = this.refs;
+    const { chatWrapper, chatPanel, chatTrigger } = this.refs;
 
-    chat.classList.remove("open");
-    chatBox.setAttribute("inert", "");
-    chatBox.setAttribute("aria-hidden", "true");
-    chatCircle.setAttribute("aria-expanded", "false");
-    chatCircle.focus();
+    chatWrapper.classList.remove("open");
+    chatPanel.setAttribute("inert", "");
+    chatPanel.setAttribute("aria-hidden", "true");
+    chatTrigger.setAttribute("aria-expanded", "false");
+    chatTrigger.focus();
 
     this.dispatchEvent(new Event("chat-closed"));
   }
@@ -217,7 +217,7 @@ class ChatBot extends HTMLElement {
   }
 
   get isOpen() {
-    return this.refs.chat?.classList.contains("open");
+    return this.refs.chatWrapper?.classList.contains("open");
   }
 
   _handleKeydown(e) {
@@ -229,7 +229,7 @@ class ChatBot extends HTMLElement {
   // Rendering Helpers
   async renderMessage({ source, content, timestamp }) {
     const msgEl = document.createElement("article");
-    msgEl.className = `message message--${source}`;
+    msgEl.className = `message message--is-source-${source}`;
     msgEl.dataset.source = source;
     msgEl.setAttribute("role", "article");
     msgEl.setAttribute("aria-label", this.isAgent(source) ? ChatBot.strings.agentMessageLabel : ChatBot.strings.yourMessageLabel);
@@ -241,7 +241,7 @@ class ChatBot extends HTMLElement {
     const avatarAlt = this.isAgent(source) ? ChatBot.strings.agentName : "You";
 
     msgEl.innerHTML = `
-      <img src="${avatarURL}" alt="${avatarAlt}">
+      <img class="message__avatar" src="${avatarURL}" alt="${avatarAlt}">
       ${this.renderMessageContent(content, timestamp)}
     `;
 
@@ -259,18 +259,18 @@ class ChatBot extends HTMLElement {
 
   renderDisplayOptions(options, schema = {}) {
     const container = document.createElement("section");
-    container.className = "display-options";
+    container.className = "suggestions";
 
     for (const option of options) {
       const article = document.createElement("article");
-      article.className = "display-option";
+      article.className = "suggestion";
       article.setAttribute("role", "group");
 
       const dl = document.createElement("dl");
       for (const [key, val] of Object.entries(option)) {
         const { type = "text", label = key } = schema[key] || {};
         const wrapper = document.createElement("div");
-        wrapper.className = `display-option__item display-option__item--is-type-${type}`;
+        wrapper.className = `suggestion__meta suggestion__meta--is-type-${type}`;
 
         const dt = document.createElement("dt");
         dt.textContent = label;
