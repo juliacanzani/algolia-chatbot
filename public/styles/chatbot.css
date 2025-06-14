@@ -305,7 +305,7 @@
   padding-block: 0.5em;
   padding-inline: 1em;
 }
-.message[data-source="operator"] > .message__content {
+.message[data-source="agent"] > .message__content {
   margin-inline-start: 0.5em;
   border-end-start-radius: 4px;
 }

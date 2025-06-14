@@ -123,17 +123,17 @@ class ChatBot extends HTMLElement {
     msgEl.className = "message";
     msgEl.dataset.source = source;
     msgEl.setAttribute("role", "article");
-    msgEl.setAttribute("aria-label", source === "operator" ? s.agentMessageLabel : s.yourMessageLabel);
+    msgEl.setAttribute("aria-label", source === "agent" ? s.agentMessageLabel : s.yourMessageLabel);
 
-    const avatarURL = source === "operator" ? "/operator.webp" : await this.getUserImage();
+    const avatarURL = source === "agent" ? "/agent.webp" : await this.getUserImage();
 
     msgEl.innerHTML = `
-      <img src="${avatarURL}" alt="${source === 'operator' ? s.agentName : 'You'}">
+      <img src="${avatarURL}" alt="${source === 'agent' ? s.agentName : 'You'}">
       <div class="message__content">${content}</div>
     `;
 
     this.refs.messages.appendChild(msgEl);
-    if (source === "operator") {
+    if (source === "agent") {
       this.refs.liveRegion.textContent = content;
     }
 
@@ -205,7 +205,7 @@ class ChatBot extends HTMLElement {
     this.refs.typing.classList.add("hidden");
 
     if (response) {
-      await this.displayMessage("operator", response, displayOptions, optionSchema);
+      await this.displayMessage("agent", response, displayOptions, optionSchema);
     }
   }
 
@@ -232,7 +232,7 @@ class ChatBot extends HTMLElement {
 
     if (!alreadyOpened) {
       setTimeout(() => {
-        this.displayMessage("operator", ChatBot.strings.initialAgentMessage);
+        this.displayMessage("agent", ChatBot.strings.initialAgentMessage);
       }, 500);
       chat.dataset.hasOpened = "true";
     }
