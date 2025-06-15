@@ -181,7 +181,7 @@ class ChatBot extends HTMLElement {
     if (this.isAgent(source)) {
       this.refs.liveRegion.textContent = content;
     }
-    
+
     msgEl.scrollIntoView({ behavior: "instant", block: "end" });
 
   }
@@ -301,10 +301,11 @@ class ChatBot extends HTMLElement {
     const typingEl = document.createElement("article");
     typingEl.className = "message message--is-source-agent message--is-indicator";
     typingEl.dataset.typing = "true";
+    typingEl.setAttribute("aria-hidden", "true");
     typingEl.innerHTML = `
       <img class="message__avatar" src="/agent.webp" alt="${ChatBot.strings.agentName}">
       <div class="message__content">
-        ${ChatBot.strings.agentName} is typing...
+        <span class="typing-indicator"><span>●</span><span>●</span><span>●</span></span>
       </div>
     `;
     return typingEl;
