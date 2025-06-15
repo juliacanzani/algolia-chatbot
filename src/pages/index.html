@@ -9,9 +9,30 @@
     <main>
       <h1>Welcome to AllTheGroceries!</h1>
       <p>This is an ecommerce grocery site with a huge product inventory and infrastructure, similar to Whole Foods. See how the AI Support Agent can help you find things in the chat window!</p>
-      <span>Design inspired by <a href="https://codepen.io/shivapandey/pen/dWdRYM">this CodePen</a></span>
+      <nav style="padding: 1em; background: #f5f5f5; border-bottom: 1px solid #ddd;">
+        <strong>Switch User:</strong>
+        <a href="?user=jaden" style="margin-right: 1em;">Jaden</a>
+        <a href="?user=alex" style="margin-right: 1em;">Alex</a>
+        <a href="?user=riley">Riley (FR)</a>
+      </nav>
     </main>
-    <chat-bot></chat-bot>
+    <chat-bot>
+      <script type="application/json" data-lang="fr">
+        {
+          "chatLabel": "Chat d'assistance IA",
+          "chatTriggerLabel": "Ouvrir le chat",
+          "chatCloseLabel": "Fermer le chat",
+          "chatPanelLabel": "Parlez à Penny",
+          "chatInputLabel": "Votre message",
+          "chatInputPlaceholder": "Envoyez un message...",
+          "chatSendLabel": "Envoyer votre message",
+          "agentName": "Penny",
+          "yourMessageLabel": "Votre message",
+          "agentMessageLabel": "Message de Penny",
+          "initialAgentMessage": "Salut ! Je peux vous aider à trouver des produits, vérifier vos commandes passées ou voir les dernières annonces. Que puis-je faire pour vous ?"
+        }
+      </script>
+    </chat-bot>
     <script type="module" src="/scripts/chatbot-ui.js"></script>
   </body>
 </html>

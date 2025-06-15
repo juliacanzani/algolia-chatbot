@@ -31,6 +31,7 @@ class ChatBot extends HTMLElement {
     document.addEventListener("keydown", this._handleKeydown);
 
     this.getUserInfo().then(() => {
+      this.lang = this._user?.locale || this.lang;
       this.loadStrings();
       this.renderChat();
       this.cacheRefs();
