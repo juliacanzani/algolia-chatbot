@@ -129,7 +129,9 @@ class ChatBot extends HTMLElement {
   addEventListeners() {
     const toggle = () => this.toggle();
     [this.refs.chatTrigger, this.refs.chatClose, this.refs.chatOverlay].forEach(el => {
-      el.addEventListener("click", toggle);
+      el.addEventListener("click", async () => {
+        await this.toggle();
+      });
     });
 
     this.refs.input.addEventListener("keydown", (e) => {
@@ -191,7 +193,7 @@ class ChatBot extends HTMLElement {
   }
 
   // Visibility Controls
-  open() {
+  async open() {
     const { chatWrapper, chatPanel, input, chatTrigger } = this.refs;
     const alreadyOpened = chatWrapper.dataset.hasOpened === "true";
 
@@ -203,11 +205,29 @@ class ChatBot extends HTMLElement {
     setTimeout(() => input.focus(), 150);
 
     if (!alreadyOpened) {
-      setTimeout(async () => {
-        await this.appendMessage("agent", ChatBot.strings.initialAgentMessage);
-      }, 500);
+      try {
+        const res = await fetch(`/start-session?user=${this.getCurrentUserKey()}`, {
+          method: "POST"
+        });
+
+        if (res.status === 200) {
+          const json = await res.json();
+
+          const { response, displayOptions, optionSchema } = json;
+
+          if (response) {
+            setTimeout(() => {
+              this.appendMessage("agent", response, displayOptions, optionSchema);
+            }, 600);
+          }
+        }
+      } catch (err) {
+        console.error("❌ Failed to load welcome message:", err);
+      }
+
       chatWrapper.dataset.hasOpened = "true";
     }
+
 
     this.dispatchEvent(new Event("chat-opened"));
   }
@@ -224,8 +244,12 @@ class ChatBot extends HTMLElement {
     this.dispatchEvent(new Event("chat-closed"));
   }
 
-  toggle() {
-    this.isOpen ? this.close() : this.open();
+  async toggle() {
+    if (this.isOpen) {
+      this.close();
+    } else {
+      await this.open();
+    }
   }
 
   get isOpen() {
