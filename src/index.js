@@ -99,12 +99,21 @@ app.post("/send-chat-message", async (req, res) => {
 
   let messages = userContexts.get(userId);
   if (!messages) {
+    
+    const systemPromptSections = {
+      persona: "You're a helpful and friendly customer service agent named Penny.",
+      userContext: user?.name
+        ? `You're chatting with a user named ${user.name}. Greet them warmly and refer to them by name when appropriate.`
+        : `You're chatting with a customer. Keep your tone warm and professional.`,
+      brandContext: "You're supporting customers on AllTheThings.com, a large ecommerce grocery store with a wide product selection, similar to Whole Foods.",
+      constraints: `Important: The chat client does not support Markdown, HTML, or any formatting.
+    Respond using plain text only — no asterisks, underscores, bullet points, code blocks, tables, or links, even if the user asks for them. Write clearly in natural language.`
+    };
+
     messages = [
       {
         role: "system",
-        content: `You're a helpful customer service agent named Penny. 
-                  You're now chatting with ${user.name} (please greet the user by this name, when it's available) on the website of AllTheThings, an ecommerce grocery site with a huge product inventory and infrastructure, similar to Whole Foods.
-                  The AllTheThings chat client does not support Markdown, HTML, or any other formatting. Respond using plain text only. Do not include asterisks, underscores, bullet points, code blocks, tables, or links — even if the user asks for them. Just write clearly in natural language.`
+        content: Object.values(systemPromptSections).join("\n\n")
       }
     ];
     userContexts.set(userId, messages);
