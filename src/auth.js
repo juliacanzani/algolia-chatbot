@@ -1,4 +1,4 @@
-export const authenticateUser = async (req) => {
+export const authenticateUser = async (userKey = "jaden") => {
   const dummyUsers = {
     jaden: {
       customerID: "e8f9g0h1-2i3j-4k5l-6m7n-8o9p0q1r2s3t",
@@ -13,15 +13,10 @@ export const authenticateUser = async (req) => {
     riley: {
       customerID: "a3f2b8c9-55c0-4d7d-9874-4b8f8c9d1a2b",
       name: "Riley",
-      image: "https://placehold.co/256x256/E2F2F4/4BB8A7?text=R"
+      image: "https://placehold.co/256x256/E2F2F4/4BB8A7?text=R",
+      locale: "fr"
     }
   };
 
-  const key =
-    req?.query?.user ||
-    req?.headers?.["x-user-id"] ||
-    process.env.DUMMY_USER_ID ||
-    "jaden";
-
-  return dummyUsers[key] || dummyUsers["jaden"];
+  return dummyUsers[userKey] || dummyUsers["jaden"];
 };

@@ -1,9 +1,9 @@
 import { executeAlgoliaSearch } from "../utils/executeAlgoliaSearch.js";
 import { formatToolResponse } from "../utils/formatToolResponse.js";
-import { authenticateUser } from "../auth.js";
 
 export const toolFunctions = {
   searchOrders: {
+    needsUser: true, 
     definition: {
       type: "function",
       function: {
@@ -21,9 +21,7 @@ export const toolFunctions = {
         }
       }
     },
-    func: async ({ query }) => {
-      const user = await authenticateUser();
-
+    func: async ({ query }, user) => {
       const { hits, error } = await executeAlgoliaSearch({
         indexName: process.env.ALGOLIA_ORDERS_INDEX_NAME,
         query,

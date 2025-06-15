@@ -29,16 +29,19 @@ class ChatBot extends HTMLElement {
 
   connectedCallback() {
     document.addEventListener("keydown", this._handleKeydown);
-    this.loadStrings();
-    this.renderChat();
-    this.cacheRefs();
-    this.addEventListeners();
 
-    requestAnimationFrame(() => {
-      setTimeout(() => {
-        this.refs.chatPanel.classList.remove("no-animation");
-        this.refs.chatOverlay.classList.remove("no-animation");
-      }, 50);
+    this.getUserInfo().then(() => {
+      this.loadStrings();
+      this.renderChat();
+      this.cacheRefs();
+      this.addEventListeners();
+
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          this.refs.chatPanel.classList.remove("no-animation");
+          this.refs.chatOverlay.classList.remove("no-animation");
+        }, 50);
+      });
     });
   }
 
@@ -335,16 +338,35 @@ class ChatBot extends HTMLElement {
     return params.get("user") || "jaden";
   }
 
-  async getUserImage() {
-    if (this._userImage) return this._userImage;
+  async getUserInfo() {
+    if (this._user) return this._user;
+
     try {
-      const res = await fetch(`/get-user-image?user=${this.getCurrentUserKey()}`, { method: "POST" });
-      const { imageURL } = await res.json();
-      this._userImage = imageURL || "/user.webp";
-      return this._userImage;
+      const res = await fetch(`/get-user?user=${this.getCurrentUserKey()}`, {
+        method: "POST"
+      });
+      const user = await res.json();
+      user.imageURL ||= "/user.webp";
+      this._user = user;
+      console.log("User image loaded:", user.imageURL);
+      return this._user;
     } catch {
-      return "/user.webp";
+      return {
+        name: null,
+        locale: "en",
+        imageURL: "/user.webp"
+      };
     }
+  }
+  async getUserImage() {
+    const user = await this.getUserInfo();
+    if (this._userImageCache?.[user.name]) {
+      return this._userImageCache[user.name];
+    }
+
+    this._userImageCache = this._userImageCache || {};
+    this._userImageCache[user.name] = user.imageURL;
+    return user.imageURL;
   }
 }
 
