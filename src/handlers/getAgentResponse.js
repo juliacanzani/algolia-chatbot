@@ -4,13 +4,16 @@ import { trimMessageHistory } from "../utils/trimMessageHistory.js";
 
 const openai = new OpenAI();
 
-export async function getAgentResponse(messages, user, displayOptions = []) {
+export async function getAgentResponse(messages, user, allowedTools = []) {
   const trimmedMessages = trimMessageHistory(messages, 30);
 
   const response = await openai.chat.completions.create({
     model: "gpt-4o-mini",
     messages: trimmedMessages,
-    tools: Object.values(toolFunctions).map(x => x.definition)
+    tools: allowedTools
+      .map(name => toolFunctions[name])
+      .filter(Boolean)
+      .map(tool => tool.definition)
   });
 
   const assistantMessage = response.choices[0].message;
@@ -57,7 +60,13 @@ export async function getAgentResponse(messages, user, displayOptions = []) {
         mergedOptionSchema = toolResult.optionSchema || {};
       }
 
-      return await getAgentResponse(messages, user, mergedDisplayOptions);
+      const final = await getAgentResponse(messages, user, allowedTools);
+
+      return {
+        ...final,
+        displayOptions: mergedDisplayOptions,
+        optionSchema: mergedOptionSchema
+      };
     }
 
     case "stop":
@@ -65,7 +74,8 @@ export async function getAgentResponse(messages, user, displayOptions = []) {
       messages.push(assistantMessage);
       return {
         response: assistantMessage.content,
-        displayOptions
+        displayOptions: [],
+        optionSchema: {}
       };
   }
 }

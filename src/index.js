@@ -3,7 +3,7 @@ import express from "express";
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import { authenticateUser } from './auth.js';
-import { promptTemplates } from './prompts/index.js';
+import { buildAgentContext } from './handlers/buildAgentContext.js';
 import { getAgentResponse } from './handlers/getAgentResponse.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -38,16 +38,17 @@ app.post("/send-chat-message", async (req, res) => {
     console.log(`💬 Message from user: ${user.name} (${userId})`);
   }
 
+  const { systemPrompt, tools } = buildAgentContext(user);
+
   let messages = userContexts.get(userId);
   if (!messages) {
-    const systemPrompt = promptTemplates.customerService.build({ user });
     messages = [{ role: "system", content: systemPrompt }];
     userContexts.set(userId, messages);
   }
 
   messages.push({ role: "user", content });
 
-  const result = await getAgentResponse(messages, user);
+  const result = await getAgentResponse(messages, user, tools);
 
   if (result.response) {
     messages.push({ role: "assistant", content: result.response });
