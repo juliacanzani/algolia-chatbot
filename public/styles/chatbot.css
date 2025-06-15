@@ -343,15 +343,19 @@
     grid-column: 1 / span 2;
   }
 }
-
 .suggestion {
+  box-sizing: border-box;
+}
+.suggestion--is-type-result {
   text-decoration: none;
   border: 1px solid #ccc;
   background-color: #fff;
-  border-radius: 16px;
   color: inherit;
-  box-sizing: border-box;
+  border-radius: 16px;
   padding: 1em;
+}
+.suggestion--is-type-button {
+  grid-column: 1 / span 2;
 }
 
 .suggestion dl {

@@ -14,6 +14,6 @@ export function buildAgentContext(user) {
 
   return {
     systemPrompt: basePrompt,
-    tools: ["searchOrders", "searchProducts", "searchAnnouncements"]
+    tools: ["chooseNextAction", "searchOrders", "searchProducts", "searchAnnouncements"]
   };
 }

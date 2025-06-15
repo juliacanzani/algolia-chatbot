@@ -33,7 +33,6 @@ app.post("/start-session", async (req, res) => {
 
   if (userContexts.has(userId)) {
     const message = getString(user.locale, "system.welcomeBack", { name: user.name });
-    return res.json({ response: message });
   }
 
   const { systemPrompt, tools } = buildAgentContext(user);
@@ -48,6 +47,9 @@ app.post("/start-session", async (req, res) => {
 
   res.status(200).json({
     response: welcome.message,
+    displayOptions: welcome.displayOptions,
+    optionSchema: welcome.optionSchema,
+    uiHints: welcome.uiHints
   });
 });
 

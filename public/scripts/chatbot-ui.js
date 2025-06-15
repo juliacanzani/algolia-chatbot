@@ -144,8 +144,8 @@ class ChatBot extends HTMLElement {
   }
 
   // Messaging Logic
-  async sendUserMessage() {
-    const message = this.refs.input.value.trim();
+  async sendUserMessage(overrideMessage = null) {
+    const message = overrideMessage || this.refs.input.value.trim();
     if (!message) return;
 
     this.refs.input.value = "";
@@ -168,7 +168,7 @@ class ChatBot extends HTMLElement {
     }
   }
 
-  async appendMessage(source, content, displayOptions = [], optionSchema = {}, timestamp = null) {
+  async appendMessage(source, content, displayOptions = [], optionSchema = {}, timestamp = null, uiHints = {}) {
     this.refs.messages.querySelectorAll('[data-typing]').forEach(el => el.remove());
 
     const entry = document.createElement("div");
@@ -176,6 +176,12 @@ class ChatBot extends HTMLElement {
 
     const msgEl = await this.renderMessage({ source, content, timestamp });
     entry.appendChild(msgEl);
+
+    if (uiHints?.hideInputWhileOptionsVisible && displayOptions.length > 0) {
+      this.hideInput();
+    } else {
+      this.showInput();
+    }
 
     if (displayOptions.length) {
       const suggestions = this.renderDisplayOptions(displayOptions, optionSchema);
@@ -189,8 +195,8 @@ class ChatBot extends HTMLElement {
     }
 
     msgEl.scrollIntoView({ behavior: "instant", block: "end" });
-
   }
+
 
   // Visibility Controls
   async open() {
@@ -212,12 +218,13 @@ class ChatBot extends HTMLElement {
 
         if (res.status === 200) {
           const json = await res.json();
+          console.log("💬 Welcome message payload:", json);
 
           const { response, displayOptions, optionSchema } = json;
 
           if (response) {
             setTimeout(() => {
-              this.appendMessage("agent", response, displayOptions, optionSchema);
+              this.appendMessage("agent", response, displayOptions, optionSchema, null, json.uiHints);
             }, 600);
           }
         }
@@ -296,31 +303,49 @@ class ChatBot extends HTMLElement {
   renderDisplayOptions(options, schema = {}) {
     const container = document.createElement("section");
     container.className = "suggestions";
+    container.setAttribute("role", "list");
 
     for (const option of options) {
-      const article = document.createElement("article");
-      article.className = "suggestion";
-      article.setAttribute("role", "group");
+      if (option.type === "prompt") {
+        const button = document.createElement("button");
+        button.className = "button suggestion--is-type-button";
+        button.textContent = option.label || option.value || option.id;
+        button.dataset.action = option.value;
 
-      const dl = document.createElement("dl");
-      for (const [key, val] of Object.entries(option)) {
-        const { type = "text", label = key } = schema[key] || {};
-        const wrapper = document.createElement("div");
-        wrapper.className = `suggestion__meta suggestion__meta--is-type-${type}`;
+        button.addEventListener("click", async () => {
+          this.refs.messages.querySelectorAll(".suggestions").forEach(el => el.remove());
+          this.showInput(); // Reveal input if it was hidden
+          await this.sendUserMessage(option.value);
+        });
 
-        const dt = document.createElement("dt");
-        dt.textContent = label;
+        container.appendChild(button);
+      } else {
+        // fallback to current DL-based rendering
+        const article = document.createElement("article");
+        article.className = "suggestion suggestion--is-type-result";
+        article.setAttribute("role", "group");
 
-        const dd = document.createElement("dd");
-        dd.textContent = this.formatValue(type, val);
+        const dl = document.createElement("dl");
 
-        wrapper.appendChild(dt);
-        wrapper.appendChild(dd);
-        dl.appendChild(wrapper);
+        for (const [key, val] of Object.entries(option)) {
+          const { type = "text", label = key } = schema[key] || {};
+          const wrapper = document.createElement("div");
+          wrapper.className = `suggestion__meta suggestion__meta--is-type-${type}`;
+
+          const dt = document.createElement("dt");
+          dt.textContent = label;
+
+          const dd = document.createElement("dd");
+          dd.textContent = this.formatValue(type, val);
+
+          wrapper.appendChild(dt);
+          wrapper.appendChild(dd);
+          dl.appendChild(wrapper);
+        }
+
+        article.appendChild(dl);
+        container.appendChild(article);
       }
-
-      article.appendChild(dl);
-      container.appendChild(article);
     }
 
     return container;
@@ -352,6 +377,17 @@ class ChatBot extends HTMLElement {
       default: return val;
     }
   }
+
+  hideInput() {
+    this.refs.input.setAttribute("disabled", "true");
+    this.refs.input.setAttribute("aria-hidden", "true");
+  }
+
+  showInput() {
+    this.refs.input.removeAttribute("disabled");
+    this.refs.input.removeAttribute("aria-hidden");
+  }
+
 
   // Utilities 
   isAgent(source) {

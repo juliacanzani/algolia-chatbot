@@ -1,10 +1,12 @@
 import { systemMessages } from "./system-messages/index.js";
 import { promptStrings } from "./prompts/index.js";
+import { actionStrings } from "./actions/index.js";
 import { resolveLocale } from "../utils/resolveLocale.js";
 
 const strings = {
   system: systemMessages,
-  prompts: promptStrings
+  prompts: promptStrings,
+  actions: actionStrings
 };
 
 export function getString(locale, path, vars = {}) {
