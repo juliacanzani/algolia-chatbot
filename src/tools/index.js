@@ -1,11 +1,11 @@
-import { toolFunctions as welcomeTools } from "./welcome-message.js";
-import { toolFunctions as productSearchTools } from './product-search.js';
-import { toolFunctions as announcementTools } from './announcement-search.js';
-import { toolFunctions as orderSearchTools } from './order-search.js';
+import getWelcomeMessage from "./welcome-message.js";
+import searchProducts from './product-search.js';
+import searchAnnouncements from './announcement-search.js';
+import searchOrders from './order-search.js';
 
 export const toolFunctions = {
-  ...welcomeTools,
-  ...announcementTools,
-  ...productSearchTools,
-  ...orderSearchTools
+  ...getWelcomeMessage,
+  ...searchAnnouncements,
+  ...searchProducts,
+  ...searchOrders
 };

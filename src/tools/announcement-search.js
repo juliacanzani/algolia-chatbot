@@ -1,7 +1,7 @@
 import { executeAlgoliaSearch } from "../utils/executeAlgoliaSearch.js";
 import { formatToolResponse } from "../utils/formatToolResponse.js";
 
-export const toolFunctions = {
+export default {
   searchAnnouncements: {
     definition: {
       type: "function",
