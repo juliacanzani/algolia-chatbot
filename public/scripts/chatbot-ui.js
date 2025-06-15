@@ -313,7 +313,12 @@ class ChatBot extends HTMLElement {
 
   formatValue(type, val) {
     switch (type) {
-      case "currency": return `$${val}`;
+      case "currency":
+        return new Intl.NumberFormat('en-US', {
+          style: 'currency',
+          currency: 'USD',
+          minimumFractionDigits: 2
+        }).format(val);
       case "rating": return `${val} stars`;
       case "date": return new Date(val).toLocaleDateString();
       default: return val;
