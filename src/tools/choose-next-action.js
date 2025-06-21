@@ -1,3 +1,4 @@
+/** @type {import('../utils/validateToolSchema.js').ToolDefinition} */
 import { toolFunctions } from "./index.js";
 import { getString } from "../strings/index.js";
 

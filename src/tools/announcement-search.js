@@ -1,48 +1,19 @@
-import { executeAlgoliaSearch } from "../utils/executeAlgoliaSearch.js";
-import { formatToolResponse } from "../utils/formatToolResponse.js";
+/** @type {import('../utils/validateToolSchema.js').ToolDefinition} */
+import { createAlgoliaTool } from "../utils/createAlgoliaTool.js";
 
-export default {
-  searchAnnouncements: {
-    definition: {
-      type: "function",
-      function: {
-        name: "searchAnnouncements",
-        description: "Search recent announcements and company updates.",
-        parameters: {
-          type: "object",
-          properties: {
-            query: {
-              type: "string",
-              description: "The keyword or phrase to search recent announcements."
-            }
-          },
-          required: ["query"],
-          additionalProperties: false
-        }
-      }
-    },
-    func: async ({ query }) => {
-      const { hits, error } = await executeAlgoliaSearch({
-        indexName: process.env.ALGOLIA_ANNOUNCEMENTS_INDEX_NAME,
-        query,
-        maxHits: 5,
-        debug: process.env.DEBUG_ALGOLIA === "true"
-      });
-
-      if (error || hits.length === 0) {
-        return "No announcements matched your query.";
-      }
-
-      return formatToolResponse({
-        hits,
-        intro: "Here are some updates that may be relevant. Don't repeat these directly — just reference them naturally.",
-        fieldsForMessage: ["title", "date", "summary"],
-        fieldsForOptions: {
-          title: { label: "Title", type: "title" },
-          date: { label: "Date", type: "date" },
-          summary: { label: "Summary", type: "longtext" }
-        }
-      });
-    }
-  }
-};
+export default createAlgoliaTool({
+  name: "searchAnnouncements",
+  description: `Search recent announcements and company updates. Use this tool to help users find updates relevant to their query.
+You may return between 1 and 6 results. Use 1 for focused queries like "show the latest update", and up to 6 for general searches.`,
+  indexName: process.env.ALGOLIA_ANNOUNCEMENTS_INDEX_NAME,
+  defaultQuery: "",
+  allowEmptyQuery: false,
+  fieldsForMessage: ["title", "date", "summary"],
+  fieldsForOptions: {
+    title: { label: "Title", type: "title" },
+    date: { label: "Date", type: "date" },
+    summary: { label: "Summary", type: "longtext" }
+  },
+  formatIntro: () =>
+    "Here are some updates that may be relevant. Don’t repeat these directly — just reference them naturally."
+});

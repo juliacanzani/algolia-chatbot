@@ -1,49 +1,38 @@
-import { executeAlgoliaSearch } from "../utils/executeAlgoliaSearch.js";
-import { formatToolResponse } from "../utils/formatToolResponse.js";
+/** @type {import('../utils/validateToolSchema.js').ToolDefinition} */
+import { createAlgoliaTool } from "../utils/createAlgoliaTool.js";
 
-export default {
-  searchProducts: {
-    definition: {
-      type: "function",
-      function: {
-        name: "searchProducts",
-        description: "Search for specific products in the product catalog.",
-        parameters: {
-          type: "object",
-          properties: {
-            query: {
-              type: "string",
-              description: "The query string used to search through the product database"
-            }
-          },
-          required: ["query"],
-          additionalProperties: false
-        }
-      }
-    },
-    func: async ({ query }) => {
-      const { hits, error } = await executeAlgoliaSearch({
-        indexName: process.env.ALGOLIA_PRODUCTS_INDEX_NAME,
-        query,
-        maxHits: 5,
-        debug: process.env.DEBUG_ALGOLIA === "true"
-      });
-
-      if (error || hits.length === 0) {
-        return "No products matched your query.";
-      }
-
-      return formatToolResponse({
-        hits,
-        intro: "Here are some products that match your search. Below this message, the user will see each product's name, price, and customer rating. Don't repeat the list — just highlight a relevant item or two in plain language.",
-        fieldsForMessage: ["name", "description", "price", "rating", "bullets"],
-        fieldsForOptions: {
-          name: { label: "Name", type: "title" },
-          price: { label: "Price", type: "currency" },
-          rating: { label: "Rating", type: "rating" },
-          objectID: { label: "SKU", type: "id" }
-        }
-      });
+export default createAlgoliaTool({
+  name: "searchProducts",
+  description: `Search for relevant products in the catalog by keyword. This tool queries the product index and returns a list of results with basic details. 
+  You can request between 1 and 6 products. If the user asks for the *best*, *top*, or *highest-rated* item, return **only 1** result. Otherwise, default to showing **6** products to fit a 2-column grid layout. 
+  Products can be sorted by rating, price (ascending or descending), or by default relevance — choose the most appropriate sort based on the user's intent.`,
+  indexName: process.env.ALGOLIA_PRODUCTS_INDEX_NAME,
+  defaultQuery: "",
+  allowEmptyQuery: false,
+  fieldsForMessage: ["name", "description", "price", "rating", "bullets"],
+  fieldsForOptions: {
+    name: { label: "Name", type: "title" },
+    price: { label: "Price", type: "currency" },
+    rating: { label: "Rating", type: "rating" },
+    objectID: { label: "SKU", type: "id" }
+  },
+  extraParameters: {
+    sort: {
+      type: "string",
+      description: "Optional sort mode. One of: 'rating_desc', 'price_asc', 'price_desc'"
     }
-  }
-};
+  },
+  getIndexName: ({ sort }) => {
+    switch (sort) {
+      case "rating_desc":
+        return "products_rating_desc";
+      case "price_asc":
+        return "products_price_asc";
+      case "price_desc":
+        return "products_price_desc";
+      default:
+        return process.env.ALGOLIA_PRODUCTS_INDEX_NAME;
+    }
+  },
+  formatIntro: (query) => `Here are some products matching "${query}".`
+});
