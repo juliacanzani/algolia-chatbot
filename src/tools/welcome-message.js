@@ -1,3 +1,4 @@
+/** @type {import('../utils/validateToolSchema.js').ToolDefinition} */
 import { availableActions } from "../actions/definitions.js";
 import { resolveLocale } from "../utils/resolveLocale.js";
 import { getString } from "../strings/index.js";

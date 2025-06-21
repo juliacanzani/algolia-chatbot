@@ -3,7 +3,8 @@
     "algoliasearch": "^5.27.0",
     "dotenv": "^16.5.0",
     "express": "^4.19.2",
-    "openai": "^4.56.0"
+    "openai": "^4.56.0",
+    "zod": "^3.25.67"
   },
   "type": "module"
 }

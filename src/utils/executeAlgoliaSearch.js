@@ -12,10 +12,12 @@ export async function executeAlgoliaSearch({
   filters,
   facetFilters,
   numericFilters,
-  maxHits = 5,
+  hitsPerPage = 6,
   debug = false,
   additionalParams = {}
 }) {
+  const maxHits = Math.min(hitsPerPage, 6);
+
   const params = serializeAlgoliaParams({
     query,
     filters,
