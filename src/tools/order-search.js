@@ -5,6 +5,7 @@ export default createAlgoliaTool({
   name: "searchOrders",
   description: `Find past orders by ID, date, or status. Results are automatically filtered to the current user's orders. 
 You can return between 1 and 6 results depending on how specific the query is.`,
+  tags: ["search", "orders", "account", "private", "authenticated"],
   indexName: process.env.ALGOLIA_ORDERS_INDEX_NAME,
   needsUser: true,
   fieldsForMessage: ["orderNumber", "date", "total"],

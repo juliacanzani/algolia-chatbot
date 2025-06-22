@@ -6,6 +6,7 @@ export default createAlgoliaTool({
   description: `Search for relevant products in the catalog by keyword. This tool queries the product index and returns a list of results with basic details. 
   You can request between 1 and 6 products. If the user asks for the *best*, *top*, or *highest-rated* item, return **only 1** result. Otherwise, default to showing **6** products to fit a 2-column grid layout. 
   Products can be sorted by rating, price (ascending or descending), or by default relevance — choose the most appropriate sort based on the user's intent.`,
+  tags: ["search", "products", "ecommerce", "public"],
   indexName: process.env.ALGOLIA_PRODUCTS_INDEX_NAME,
   defaultQuery: "",
   allowEmptyQuery: false,

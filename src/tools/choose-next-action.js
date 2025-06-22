@@ -9,6 +9,7 @@ export default {
       function: {
         name: "chooseNextAction",
         description: "Handles a user’s selected next step, like viewing orders or browsing products.",
+        tags: ["system", "info", "public"],
         parameters: {
           type: "object",
           properties: {

@@ -7,6 +7,7 @@ import { formatToolResponse } from "./formatToolResponse.js";
  * @param {Object} config - Configuration for the tool.
  * @param {string} config.name - Tool name.
  * @param {string} config.description - Tool description.
+ * @param {string[]} [config.tags] - Optional list of tags describing the tool (e.g., "search", "orders", "internal").
  * @param {string} config.indexName - Algolia index to search.
  * @param {Object} config.fieldsForMessage - Fields to include in the message.
  * @param {Object} config.fieldsForOptions - Fields to display as selectable options.
@@ -21,6 +22,7 @@ import { formatToolResponse } from "./formatToolResponse.js";
 export function createAlgoliaTool({
   name,
   description,
+  tags = [],
   indexName,
   defaultQuery = "",
   allowEmptyQuery = false,
@@ -34,6 +36,7 @@ export function createAlgoliaTool({
 }) {
   return {
     [name]: {
+      tags,
       needsUser,
       definition: {
         type: "function",

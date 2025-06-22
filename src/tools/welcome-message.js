@@ -9,7 +9,8 @@ export default {
       type: "function",
       function: {
         name: "getWelcomeMessage",
-        description: "Returns a localized welcome message and helpful starting options."
+        description: "Returns a localized welcome message and helpful starting options.",
+        tags: ["system", "greeting", "startup", "public"]
       }
     },
     needsUser: true,

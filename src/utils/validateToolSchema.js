@@ -22,8 +22,10 @@ export const singleToolSchema = z.object({
     function: toolFunctionSchema
   }),
   func: z.function(),
-  needsUser: z.boolean().optional()
+  needsUser: z.boolean().optional(),
+  tags: z.array(z.string()).optional()
 });
+
 
 /**
  * Validate a single tool definition (e.g., default export from welcome-message.js)

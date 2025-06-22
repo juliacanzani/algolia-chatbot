@@ -5,6 +5,7 @@ export default createAlgoliaTool({
   name: "searchAnnouncements",
   description: `Search recent announcements and company updates. Use this tool to help users find updates relevant to their query.
 You may return between 1 and 6 results. Use 1 for focused queries like "show the latest update", and up to 6 for general searches.`,
+  tags: ["search", "announcements", "updates", "public"],
   indexName: process.env.ALGOLIA_ANNOUNCEMENTS_INDEX_NAME,
   defaultQuery: "",
   allowEmptyQuery: false,
