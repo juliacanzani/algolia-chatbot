@@ -1,5 +1,5 @@
-import { executeAlgoliaSearch } from "./executeAlgoliaSearch.js";
-import { formatToolResponse } from "./formatToolResponse.js";
+import { executeAlgoliaSearch } from "./executeSearch.js";
+import { formatToolResponse } from "./formatResponse.js";
 
 /**
  * Creates a standard search tool definition using Algolia.
@@ -29,7 +29,7 @@ export function createAlgoliaTool({
   needsUser = false,
   fieldsForMessage = [],
   fieldsForOptions = {},
-  formatIntro = (query) => `Results for "${query}":`,
+  formatIntro = (query) => `Here are some product suggestions for "${query}". The customer can click to explore any of them — no need to repeat the list.`,
   extraParameters = {},
   getIndexName = () => indexName,
   getSearchParams
@@ -48,7 +48,7 @@ export function createAlgoliaTool({
             properties: {
               query: {
                 type: "string",
-                description: "The query to search the index with."
+                description: "The query to search the index with. Can be left empty if the customer makes a vague query."
               },
               hitsPerPage: {
                 type: "integer",

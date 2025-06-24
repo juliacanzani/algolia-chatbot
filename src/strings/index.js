@@ -18,12 +18,17 @@ export function getString(locale, path, vars = {}) {
     if (current && typeof current === "object") {
       current = current[part];
     } else {
-      console.warn(`⚠️ [getString] Missing string path: ${path}`);
+      console.warn(`⚠️ [getString] Invalid path segment "${part}" in "${path}"`);
       return "";
     }
   }
 
   const localized = current?.[resolved] ?? current?.en;
+
+  if (!localized) {
+    console.warn(`⚠️ [getString] No string found for path "${path}" and locale "${resolved}"`);
+    return "";
+  }
 
   if (typeof localized === "function") {
     return localized(vars);

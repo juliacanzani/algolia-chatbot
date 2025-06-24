@@ -1,5 +1,5 @@
 import { algoliasearch } from "algoliasearch";
-import { serializeAlgoliaParams } from "./serializeAlgoliaParams.js";
+import { serializeAlgoliaParams } from "./serializeParams.js";
 
 const algoliaClient = algoliasearch(
   process.env.ALGOLIA_APPLICATION_ID,
